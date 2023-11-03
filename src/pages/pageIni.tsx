@@ -1,4 +1,5 @@
 import { useFetchUsers } from '@/services/inicial';
+import ParentComponent from './parent';
 
 function FetchUsers() {
   const { isLoading, error, data } = useFetchUsers();
@@ -11,7 +12,12 @@ function FetchUsers() {
 }
 
 function PageIni() {
-  return <FetchUsers />;
+  return (
+    <div>
+      <FetchUsers />
+      <ParentComponent />
+    </div>
+  );
 }
 
 export default PageIni;

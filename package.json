@@ -21,13 +21,15 @@
     "react-query": "^3.39.3",
     "react-router-dom": "^6.17.0",
     "url": "^0.11.3",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "wavesurfer.js": "^7.4.2"
   },
   "devDependencies": {
     "@types/node": "^20.8.9",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@types/uuid": "^9.0.6",
+    "@types/wavesurfer.js": "^6.0.10",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
