@@ -8,10 +8,16 @@ import Minimap from 'wavesurfer.js/dist/plugins/minimap.js';
 interface WaveformProps {
   url: string;
   onSelection: (start: number, end: number) => void;
+  edit: boolean;
 }
 
-const Waveform: React.FC<WaveformProps> = ({ url, onSelection }) => {
+const Waveform: React.FC<WaveformProps> = ({ url, onSelection, edit }) => {
   const waveformRef = useRef<HTMLDivElement | null>(null);
+  const editRef = useRef(edit);
+
+  useEffect(() => {
+    editRef.current = edit;
+  }, [edit]);
 
   useEffect(() => {
     if (waveformRef.current) {
@@ -55,35 +61,46 @@ const Waveform: React.FC<WaveformProps> = ({ url, onSelection }) => {
 
       const wsRegions = wavesurfer.registerPlugin(RegionsPlugin.create());
       wavesurfer.on('decode', () => {
-        // Markers (zero-length regions)
         wsRegions.addRegion({
-          start: 19,
-          content: '1',
-          color: 'green',
+          start: 0,
+          end: 1,
+          color: 'rgba(180, 180, 180, 0.5)',
+          drag: false,
+          resize: true,
         });
-        wsRegions.addRegion({
-          start: 20,
-          content: '2',
-          color: 'red',
-        });
-        wsRegions.getRegions()[0].setOptions({ start: 120 });
       });
       let touchtime = 0;
       wavesurfer.on('click', () => {
         if (touchtime == 0) {
           // set first click
+          wavesurfer.play();
           touchtime = new Date().getTime();
-        } else if (new Date().getTime() - touchtime < 800) {
+        } else if (new Date().getTime() - touchtime < 800 && editRef.current) {
           // compare first click to this click and see if they occurred within double click threshold
 
           // double click occurred
+          const pos = wavesurfer.getCurrentTime();
+          const region = wsRegions.getRegions()[0];
+          const medio = (region.start + region.end) / 2;
+          if (region.start == 0) {
+            region.setOptions({ start: pos, end: pos + 30 });
+          } else if (pos <= medio) {
+            region.setOptions({ start: pos });
+          } else {
+            region.setOptions({ start: region.start, end: pos });
+          }
 
-          wavesurfer.play();
+          onSelection(region.start, region.end);
           touchtime = 0;
         } else {
           // not a double click so set as a new first click
           touchtime = new Date().getTime();
         }
+      });
+
+      wsRegions.on('region-clicked', (region, e) => {
+        e.stopPropagation(); // prevent triggering a click on the waveform
+        region.play();
       });
 
       return () => wavesurfer.destroy();
