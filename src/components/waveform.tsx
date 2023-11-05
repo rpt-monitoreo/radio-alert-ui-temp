@@ -73,17 +73,16 @@ const Waveform: React.FC<WaveformProps> = ({ url, onSelection }) => {
         if (touchtime == 0) {
           // set first click
           touchtime = new Date().getTime();
-        } else {
+        } else if (new Date().getTime() - touchtime < 800) {
           // compare first click to this click and see if they occurred within double click threshold
-          if (new Date().getTime() - touchtime < 800) {
-            // double click occurred
 
-            wavesurfer.play();
-            touchtime = 0;
-          } else {
-            // not a double click so set as a new first click
-            touchtime = new Date().getTime();
-          }
+          // double click occurred
+
+          wavesurfer.play();
+          touchtime = 0;
+        } else {
+          // not a double click so set as a new first click
+          touchtime = new Date().getTime();
         }
       });
 
