@@ -12,6 +12,7 @@ import defaultProps from './_defaultProps';
 import SearchInput from './components/SearchInput';
 import MenuCard from './components/MenuCard';
 import PageIni from './pages/pageIni';
+import './App.css';
 
 function App() {
   const settings: Partial<ProSettings> = {
@@ -174,6 +175,7 @@ function App() {
             height: '200vh',
             minHeight: 800,
           }}
+          gutter={{ xs: 8, sm: 16, md: 0 }}
         >
           <PageIni></PageIni>
         </ProCard>
