@@ -34,9 +34,10 @@ const Waveform: React.FC<WaveformProps> = ({ url, onSelection, edit }) => {
         barGap: 1,
         barRadius: 1,
         barHeight: 0.7,
-
-        minPxPerSec: 2, //El ancho del audio muestra o no la barra
-
+        minPxPerSec: 2, //El ancho del audio
+        autoCenter: false,
+        autoScroll: false,
+        mediaControls: true,
         plugins: [
           TimelinePlugin.create({
             height: 24,
@@ -52,9 +53,27 @@ const Waveform: React.FC<WaveformProps> = ({ url, onSelection, edit }) => {
           Minimap.create({
             container: waveformRef.current,
             height: 20,
+            barHeight: 0.5,
             waveColor: '#ddd',
             progressColor: '#999',
             // the Minimap takes all the same options as the WaveSurfer itself
+            plugins: [
+              TimelinePlugin.create({
+                height: 10,
+                timeInterval: 5,
+                primaryLabelInterval: 60,
+                secondaryLabelInterval: 30,
+                style: {
+                  fontSize: '8px',
+                  color: '#2D5B88',
+                },
+                formatTimeCallback: function (secs) {
+                  const minutes = Math.floor(secs / 60) || 0;
+                  const seconds = secs - minutes * 60 || 0;
+                  return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+                },
+              }),
+            ],
           }),
         ],
       } as any);
@@ -99,8 +118,10 @@ const Waveform: React.FC<WaveformProps> = ({ url, onSelection, edit }) => {
       });
 
       wsRegions.on('region-clicked', (region, e) => {
-        e.stopPropagation(); // prevent triggering a click on the waveform
-        region.play();
+        if (!editRef.current) {
+          e.stopPropagation(); // prevent triggering a click on the waveform
+          region.play();
+        }
       });
 
       return () => wavesurfer.destroy();
